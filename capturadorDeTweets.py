@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import sys, re, json
 import tweepy, csv, os
-import time
 import datetime
 
 # Claves de autenticacion
@@ -20,6 +19,7 @@ api = tweepy.API(auth)
 print('El siguiente script permite ingresar un termino de busqueda y buscarlo en Twitter, pueden ser hashtags\n')
 stdin = (raw_input('Ingrese el termino de busqueda :\n'))
 stdin.encode('UTF-8')
+
 # Esto quita el archivo si ya existe
 # try:
 # os.remove("mycsvfile.csv")
@@ -28,8 +28,19 @@ stdin.encode('UTF-8')
 
 try:
     # Crea el set de tweets dependiendo de lo que se busco
-    sQuery = tweepy.Cursor(api.search, q=stdin, geocode="6.2690007,-75.7364814,100km", show_user=True).items(500)
+    sQuery = tweepy.Cursor(api.search, q=stdin, geocode="6.2690007,-75.7364814,100km", show_user=True).items(10)
     writedHeader = True
+
+    # Comprobacion de si ya existe ese archivo
+    datasetName = stdin.replace(" ", "-")  # Remplaza un espacio por un guion de ser necesario
+    datasetName = datasetName + '_dataset.csv'
+    print datasetName
+    if os.path.isfile(datasetName):
+        print ("archivo existe")
+        writedHeader = False
+    else:
+        print ("el archivo no existe")
+
     for tweet in sQuery:
         stdin = stdin.replace(" ", "-")  # Remplaza un espacio por un guion de ser necesario
         if (datetime.datetime.now() - tweet.created_at).days < 365:
@@ -40,8 +51,9 @@ try:
             tweet_data["lang"] = tweet._json["lang"].encode("UTF-8")
             tweet_data["Fecha"] = tweet._json["created_at"].encode("UTF-8")
             # print json.dumps(tweet._json)
+
             # Abro el csv y le hago append de ese tweet, solo escribo el header la primera vez mediante la variable de control
-            with open(stdin + '_dataset.csv', 'a') as f:
+            with open(datasetName, 'a') as f:
                 # El header seran las keys de ese tweet (que son las mismas para todos los tweets)
                 w = csv.DictWriter(f, tweet_data.keys())
                 if writedHeader:
@@ -50,4 +62,3 @@ try:
                 w.writerow(tweet_data)
 except tweepy.TweepError:
     print('You have an error on your auth, please check your keys')
-

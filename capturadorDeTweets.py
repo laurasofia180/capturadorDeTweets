@@ -50,6 +50,7 @@ try:
             tweet_data["id"] = tweet._json["id"]
             tweet_data["lang"] = tweet._json["lang"].encode("UTF-8")
             tweet_data["Fecha"] = tweet._json["created_at"].encode("UTF-8")
+            tweet_data["Ubicacion"] = tweet.user.location.encode("UTF-8")
             # print json.dumps(tweet._json)
 
             # Abro el csv y le hago append de ese tweet, solo escribo el header la primera vez mediante la variable de control

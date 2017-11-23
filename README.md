@@ -7,3 +7,7 @@ Esta aplicación permite realizar una busqueda en Twitter de palabras y capturar
 ###### Prerequisitos
 
 *Python 2.7
+
+###### Instalación 
+
+`git clone https://github.com/laurasofia180/capturadorDeTweets.git`
